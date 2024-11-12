@@ -122,7 +122,7 @@ const Calendar = () => {
     setConfig((prevConfig) => ({
       ...prevConfig,
       columnWidthSpec: "Fixed",
-      columnWidth: 100,
+      columnWidth: 110,
       columns,
       headerLevels: 1
     }));
