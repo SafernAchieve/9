@@ -62,28 +62,41 @@ const Calendar = () => {
   const calendarRef = useRef();
 
   const [selectedPurpose, setSelectedPurpose] = useState("All");
+  const [selectedLocation, setSelectedLocation] = useState("All");
 
-  // Define allResources state and applyResourceFilter function
   const [allResources, setAllResources] = useState([
-    { name: "RP 1", id: "R1", purpose: "Play" },
-    { name: "RP 2", id: "R2", purpose: "Play" },
-    { name: "RP 3", id: "R3", purpose: "Couple" },
-    { name: "RP 4", id: "R4", purpose: "Couple" },
-    { name: "RP 5", id: "R5", purpose: "Couple" },
-    { name: "RP 6", id: "R6", purpose: "Individual" },
-    { name: "RP 7", id: "R7", purpose: "Individual" },
-
-
+    { name: "RP 1", id: "R1", purpose: "Play", location: "RP" },
+    { name: "RP 2", id: "R2", purpose: "Play", location: "RP" },
+    { name: "RP 3", id: "R3", purpose: "Couple", location: "RP" },
+    { name: "RP 4", id: "R4", purpose: "Couple", location: "RP" },
+    { name: "RP 5", id: "R5", purpose: "Couple", location: "RP" },
+    { name: "RP 6", id: "R6", purpose: "Individual", location: "RP" },
+    { name: "RP 7", id: "R7", purpose: "Individual", location: "RP" },
+    { name: "CC 1", id: "P1", purpose: "Play", location: "CC" },
+    { name: "CC 2", id: "P2", purpose: "Play", location: "CC" },
+    { name: "CC 3", id: "P3", purpose: "Couple", location: "CC" },
+    { name: "CC 4", id: "P4", purpose: "Couple", location: "CC" },
+    { name: "CC 5", id: "P5", purpose: "Couple", location: "CC" },
+    { name: "CC 6", id: "P6", purpose: "Individual", location: "CC" },
+    { name: "CC 7", id: "P7", purpose: "Individual", location: "CC" },
+    { name: "Airmont 1", id: "T1", purpose: "Play", location: "Airmont" },
+    { name: "Airmont 2", id: "T2", purpose: "Play", location: "Airmont" },
+    { name: "Airmont 3", id: "T3", purpose: "Couple", location: "Airmont" },
+    { name: "Airmont 4", id: "T4", purpose: "Couple", location: "Airmont" },
+    { name: "Airmont 5", id: "T5", purpose: "Couple", location: "Airmont" },
+    { name: "Airmont 6", id: "T6", purpose: "Individual", location: "Airmont" },
+    { name: "Airmont 7", id: "T7", purpose: "Individual", location: "Airmont" }
   ]);
 
   useEffect(() => {
     applyResourceFilter();
-  }, [selectedPurpose]);
+  }, [selectedPurpose, selectedLocation]);
 
   const applyResourceFilter = () => {
-    const filteredResources = selectedPurpose === "All"
-      ? allResources
-      : allResources.filter(resource => resource.purpose === selectedPurpose);
+    const filteredResources = allResources.filter(resource => {
+      return (selectedPurpose === "All" || resource.purpose === selectedPurpose) &&
+             (selectedLocation === "All" || resource.location === selectedLocation);
+    });
 
     setConfig(prevConfig => ({
       ...prevConfig,
@@ -98,8 +111,12 @@ const Calendar = () => {
     setSelectedPurpose(e.target.value);
   };
 
+  const handleLocationChange = (e) => {
+    setSelectedLocation(e.target.value);
+  };
+
   const resources5 = () => {
-    setConfig((prevConfig) => ({
+    setConfig(prevConfig => ({
       ...prevConfig,
       columnWidthSpec: "Auto",
       columns: [
@@ -113,21 +130,6 @@ const Calendar = () => {
     }));
   };
 
-  const resources50 = () => {
-    const columns = Array.from({ length: 50 }, (_, i) => ({
-      id: i + 1,
-      name: `Resource ${i + 1}`
-    }));
-
-    setConfig((prevConfig) => ({
-      ...prevConfig,
-      columnWidthSpec: "Fixed",
-      columnWidth: 110,
-      columns,
-      headerLevels: 1
-    }));
-  };
-
   const daysResources = () => {
     const columns = Array.from({ length: 7 }, (_, i) => {
       const start = DayPilot.Date.today().addDays(i);
@@ -136,8 +138,8 @@ const Calendar = () => {
         start,
         name: `${start.toString("MMMM d, yyyy")}`,
         children: allResources
-          .filter((resource) => selectedPurpose === "All" || resource.purpose === selectedPurpose)
-          .map((resource) => ({
+          .filter(resource => selectedPurpose === "All" || resource.purpose === selectedPurpose)
+          .map(resource => ({
             name: resource.name,
             id: resource.id,
             purpose: resource.purpose
@@ -145,7 +147,7 @@ const Calendar = () => {
       };
     });
 
-    setConfig((prevConfig) => ({
+    setConfig(prevConfig => ({
       ...prevConfig,
       columnWidthSpec: "100",
       columns,
@@ -161,7 +163,7 @@ const Calendar = () => {
       { name: "WC", id: "R4" }
     ];
 
-    columns.forEach((col) => {
+    columns.forEach(col => {
       col.children = Array.from({ length: 7 }, (_, i) => {
         const start = DayPilot.Date.today().addDays(i);
         return {
@@ -172,7 +174,7 @@ const Calendar = () => {
       });
     });
 
-    setConfig((prevConfig) => ({
+    setConfig(prevConfig => ({
       ...prevConfig,
       columnWidthSpec: "Auto",
       columns,
@@ -184,24 +186,33 @@ const Calendar = () => {
     <div>
       <div className={"space"}>
         Resources view:
-        <label><input name="view" type={"radio"} onClick={resources5} defaultChecked={true} /> 5 columns</label>
-        <label><input name="view" type={"radio"} onClick={resources50} /> 50 columns</label>
-        <label><input name="view" type={"radio"} onClick={daysResources} /> Days/resources</label>
-        <label><input name="view" type={"radio"} onClick={resourcesDays} /> Resources/days</label>
-        <label><input name="view" type={"radio"} onClick={applyResourceFilter} /> Groups</label>
-        <label><input name="view" type={"radio"} onClick={applyResourceFilter} /> All</label>
+        <label><input name="view" type="radio" onClick={resources5} defaultChecked={true} /> 5 columns</label>
+        <label><input name="view" type="radio" onClick={daysResources} /> Days/resources</label>
+        <label><input name="view" type="radio" onClick={resourcesDays} /> Resources/days</label>
+        <label><input name="view" type="radio" onClick={applyResourceFilter} /> Groups</label>
+        <label><input name="view" type="radio" onClick={applyResourceFilter} /> All</label>
 
-        <select onChange={handlePurposeChange} value={selectedPurpose}>
-          <option value="All">All</option>
-          <option value="Play">Play</option>
-          <option value="Couple">Couple</option>
-          <option value="Individual">Individual</option>
-        </select>
-      </div>
+        <label>
+          Purpose:
+          <select onChange={handlePurposeChange} value={selectedPurpose}>
+            <option value="All">All</option>
+            <option value="Play">Play</option>
+            <option value="Couple">Couple</option>
+            <option value="Individual">Individual</option>
+          </select>
+        </label>
 
-      <div className="calendar-container">
-        <DayPilotCalendar {...config} ref={calendarRef} />
+        <label>
+          Location:
+          <select onChange={handleLocationChange} value={selectedLocation}>
+            <option value="All">All</option>
+            <option value="RP">RP</option>
+            <option value="CC">CC</option>
+            <option value="Airmont">Airmont</option>
+          </select>
+        </label>
       </div>
+      <DayPilotCalendar {...config} ref={calendarRef} />
     </div>
   );
 };
