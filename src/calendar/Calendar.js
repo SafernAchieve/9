@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { DayPilot, DayPilotCalendar } from "daypilot-pro-react";
+import { DayPilotNavigator} from "daypilot-pro-react";
+import "./Calendar.css";
+
 
 const Calendar = () => {
   const [config, setConfig] = useState({
@@ -14,19 +17,9 @@ const Calendar = () => {
     eventArrangement: "Cascade",
     allowEventOverlap: true,
     timeRangeSelectedHandling: "Enabled",
-    onTimeRangeSelected: async (args) => {
-      const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
-      const dp = args.control;
-      dp.clearSelection();
-      if (modal.canceled) { return; }
-      dp.events.add({
-        start: args.start,
-        end: args.end,
-        id: DayPilot.guid(),
-        text: modal.result,
-        resource: args.resource
-      });
-    },
+
+
+   
     eventDeleteHandling: "Disabled",
     eventMoveHandling: "Update",
     onEventMoved: (args) => {
@@ -44,20 +37,50 @@ const Calendar = () => {
         id: 1,
         text: "Event 1",
         start: DayPilot.Date.today().addHours(10),
-        end: DayPilot.Date.today().addHours(12),
+        end: DayPilot.Date.today().addHours(11),
         resource: "R1"
       },
       {
-        id: 2,
+        id: 1,
         text: "Event 2",
-        start: "2018-06-02T10:00:00",
-        end: "2018-06-02T11:00:00",
-        resource: "R2",
-        barColor: "#38761d",
-        barBackColor: "#93c47d"
-      }
+        start: DayPilot.Date.today().addHours(9),
+        end: DayPilot.Date.today().addHours(10),
+        resource: "R1"
+      },
     ]
   });
+
+  const [startDate, setStartDate] = useState(new DayPilot.Date("2024-11-07"));
+  const [events, setEvents] = useState([]);
+
+
+
+  const next = () => {
+    setStartDate(startDate.addDays(1));
+  };
+
+  const previous = () => {
+    setStartDate(startDate.addDays(-1));
+  };
+
+
+  const onTimeRangeSelected = async args => {
+    const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
+    calendarRef.current.control.clearSelection();
+    if (modal.canceled) { return; }
+    setEvents([...events, {
+      start: args.start,
+      end: args.end,
+      id: DayPilot.guid(),
+      resource: args.resource,
+      text: modal.result
+    }]);
+  };
+
+
+
+
+
 
   const calendarRef = useRef();
 
@@ -88,9 +111,49 @@ const Calendar = () => {
     { name: "Airmont 7", id: "T7", purpose: "Individual", location: "Airmont" }
   ]);
 
+
+
+
+  useEffect(() => {
+    // Adding the event for RP 1 on November 7, 2024, at 9:00 AM
+    setConfig(prevConfig => ({
+      ...prevConfig,
+      events: [
+        ...prevConfig.events,
+        
+        {
+          id: DayPilot.guid(),
+          text: "RP1 Event",
+          start: new DayPilot.Date("2024-11-07T09:00:00"),
+          end: new DayPilot.Date("2024-11-07T10:00:00"), // Adjust the end time as needed
+          resource: "R1" // RP 1 corresponds to "R1"
+        }
+      ]
+    }));
+  }, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
   useEffect(() => {
     applyResourceFilter();
   }, [selectedPurpose, selectedLocation]);
+
+
 
   const applyResourceFilter = () => {
     const filteredResources = allResources.filter(resource => {
@@ -106,6 +169,10 @@ const Calendar = () => {
       }))
     }));
   };
+
+
+
+
 
   const handlePurposeChange = (e) => {
     setSelectedPurpose(e.target.value);
@@ -130,23 +197,27 @@ const Calendar = () => {
     }));
   };
 
+
+
+
+  
+
+
+
+
   const daysResources = () => {
+    applyResourceFilter(); // This will set the filtered resources in config.columns based on selectedPurpose and selectedLocation
+    
     const columns = Array.from({ length: 7 }, (_, i) => {
       const start = DayPilot.Date.today().addDays(i);
       return {
         id: i,
         start,
         name: `${start.toString("MMMM d, yyyy")}`,
-        children: allResources
-          .filter(resource => selectedPurpose === "All" || resource.purpose === selectedPurpose)
-          .map(resource => ({
-            name: resource.name,
-            id: resource.id,
-            purpose: resource.purpose
-          }))
+        children: config.columns // use the columns set by applyResourceFilter
       };
     });
-
+  
     setConfig(prevConfig => ({
       ...prevConfig,
       columnWidthSpec: "100",
@@ -154,26 +225,34 @@ const Calendar = () => {
       headerLevels: 2
     }));
   };
+  
+
+
+
 
   const resourcesDays = () => {
-    const columns = [
-      { name: "CC", id: "R1" },
-      { name: "RP", id: "R2" },
-      { name: "AM", id: "R3" },
-      { name: "WC", id: "R4" }
-    ];
-
-    columns.forEach(col => {
-      col.children = Array.from({ length: 7 }, (_, i) => {
-        const start = DayPilot.Date.today().addDays(i);
+    applyResourceFilter();
+  
+    // Create a parent column for each filtered resource
+    const columns = config.columns.map(resource => {
+      // Generate 7 days as sub-columns for each resource
+      const children = Array.from({ length: 7 }, (_, i) => {
+        const date = DayPilot.Date.today().addDays(i);
         return {
-          id: col.id,
-          start,
-          name: `${start.toString("ddd")}`
+          id: `${resource.id}_${i}`, // Unique ID for each sub-column
+          start: date,
+          name: date.toString("MMMM d, yyyy") // Display the date as a string
         };
       });
+  
+      return {
+        name: resource.name,
+        id: resource.id,
+        children // Attach the children array as sub-columns
+      };
     });
-
+  
+    // Update the calendar configuration with new columns
     setConfig(prevConfig => ({
       ...prevConfig,
       columnWidthSpec: "Auto",
@@ -181,15 +260,57 @@ const Calendar = () => {
       headerLevels: 2
     }));
   };
+  
+  
+
+
+
+
+
+  
+
+
+
+
+
+
 
   return (
     <div>
-      <div className={"space"}>
-        Resources view:
+    <div className={"wrap"}>
+
+
+
+
+
+
+
+
+  
+<div className={"left"}>
+  <DayPilotNavigator
+    selectMode={"Day"}
+    showMonths={3}
+    skipMonths={3}
+    selectionDay={startDate}
+    startDate={startDate}
+    onTimeRangeSelected={ args => setStartDate(args.day) }
+  />
+</div>
+<div className={"calendar"}>
+
+  <div className={"toolbar"}>
+  
+    <span>Day:</span>
+    <button onClick={ev => previous()}>Previous</button>
+    <button onClick={ev => next()}>Next</button>
+
+
+    Resources view:
         <label><input name="view" type="radio" onClick={resources5} defaultChecked={true} /> 5 columns</label>
         <label><input name="view" type="radio" onClick={daysResources} /> Days/resources</label>
         <label><input name="view" type="radio" onClick={resourcesDays} /> Resources/days</label>
-        <label><input name="view" type="radio" onClick={applyResourceFilter} /> Groups</label>
+        
         <label><input name="view" type="radio" onClick={applyResourceFilter} /> All</label>
 
         <label>
@@ -211,8 +332,18 @@ const Calendar = () => {
             <option value="Airmont">Airmont</option>
           </select>
         </label>
-      </div>
-      <DayPilotCalendar {...config} ref={calendarRef} />
+  </div>
+
+
+  <DayPilotCalendar 
+      {...config}
+      onTimeRangeSelected={onTimeRangeSelected}
+      startDate={startDate}
+  
+      ref={calendarRef} />
+
+</div>
+</div>
     </div>
   );
 };
