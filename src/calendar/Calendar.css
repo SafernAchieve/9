@@ -1,13 +1,17 @@
 .wrap {
     display: flex;
+    flex-direction: row;
 }
 
 .left {
-    margin-right: 10px;
+    margin-right: 20px;
 }
 
 .calendar {
     flex-grow: 1;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap;
+    width: 100%;
 }
 
 /* toolbar */
