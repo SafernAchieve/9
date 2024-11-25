@@ -31,37 +31,12 @@ const Calendar = () => {
     },
     eventClickHandling: "Disabled",
     eventHoverHandling: "Disabled",
+
+
     startDate: DayPilot.Date.today(),
     days: 28, 
     events: [
-      {
-        id: 1,
-        text: "Event 1",
-        start: DayPilot.Date.today().addHours(10),
-        end: DayPilot.Date.today().addHours(11),
-        resource: "R1"
-      },
-      {
-        id: 2,
-        text: "Event 2",
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(10),
-        resource: "R2"
-      },
-      {
-        id: 1,
-        text: "Event 3",
-        start: DayPilot.Date.today().addHours(10),
-        end: DayPilot.Date.today().addHours(11),
-        resource: "R3"
-      },
-      {
-        id: 1,
-        text: "Event 4",
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(10),
-        resource: "R4"
-      },
+   
       {
         id: 1,
         text: "Event 5",
@@ -99,78 +74,7 @@ const Calendar = () => {
         end: DayPilot.Date.today().addHours(10),
         resource: "P2"
       },
-      {
-        id: 1,
-        text: "Event 3",
-        start: DayPilot.Date.today().addHours(10),
-        end: DayPilot.Date.today().addHours(11),
-        resource: "P3"
-      },
-      {
-        id: 1,
-        text: "Event 4",
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(10),
-        resource: "P4"
-      },
-      {
-        id: 1,
-        text: "Event 5",
-        start: DayPilot.Date.today().addHours(10),
-        end: DayPilot.Date.today().addHours(11),
-        resource: "P5"
-      },
-      {
-        id: 1,
-        text: "Event 6",
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(10),
-        resource: "P6"
-      },
-      {
-        id: 1,
-        text: "Event 7",
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(10),
-        resource: "P7"
-      },
-
-
-      {
-        id: 1,
-        text: "Event 1",
-        start: DayPilot.Date.today().addHours(10),
-        end: DayPilot.Date.today().addHours(11),
-        resource: "T1"
-      },
-      {
-        id: 2,
-        text: "Event 2",
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(10),
-        resource: "T2"
-      },
-      {
-        id: 1,
-        text: "Event 3",
-        start: DayPilot.Date.today().addHours(10),
-        end: DayPilot.Date.today().addHours(11),
-        resource: "T3"
-      },
-      {
-        id: 1,
-        text: "Event 4",
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(10),
-        resource: "T4"
-      },
-      {
-        id: 1,
-        text: "Event 5",
-        start: DayPilot.Date.today().addHours(10),
-        end: DayPilot.Date.today().addHours(11),
-        resource: "T5"
-      },
+ 
       {
         id: 1,
         text: "Event 6",
@@ -188,34 +92,6 @@ const Calendar = () => {
     ]
   });
   
-
-
-
-  const filterDaysWithEvents = () => {
-    const daysWithEvents = Array.from(
-      new Set(config.events.map((e) => e.start.toDateLocal().toISOString().split("T")[0]))
-    );
-
-    if (daysWithEvents.length > 0) {
-      setConfig((prevConfig) => ({
-        ...prevConfig,
-        startDate: daysWithEvents[0],
-        days: daysWithEvents.length,
-        filteredDates: daysWithEvents,
-      }));
-    }
-  };
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -252,7 +128,7 @@ const Calendar = () => {
 
 
 
-  const calendarRef = useRef();
+ 
 
   const [selectedPurpose, setSelectedPurpose] = useState("All");
   const [selectedLocation, setSelectedLocation] = useState("All");
@@ -280,76 +156,6 @@ const Calendar = () => {
     { name: "Airmont 6", id: "T6", purpose: "Individual", location: "Airmont" },
     { name: "Airmont 7", id: "T7", purpose: "Individual", location: "Airmont" }
   ]);
-
-  const checkResourcesWithEvents = () => {
-    const resourceIds = allResources.map(resource => resource.id); // Get all resource IDs
-    const resourcesWithEvents = new Set();
-  
-    // Check each event and record resources with events
-    config.events.forEach(event => {
-      if (resourceIds.includes(event.resource)) {
-        resourcesWithEvents.add(event.resource);
-      }
-    });
-  
-    // Log the resources with events and their corresponding times
-    resourcesWithEvents.forEach(resourceId => {
-      const resource = allResources.find(res => res.id === resourceId);
-  
-      console.log(`Resource with event scheduled: ${resource.name}`);
-  
-      // Find all events for this resource
-      const resourceEvents = config.events.filter(event => event.resource === resourceId);
-      resourceEvents.forEach(event => {
-        console.log(`  Event: ${event.text}`);
-        console.log(`  Start Time: ${event.start.toString()}`);
-        console.log(`  End Time: ${event.end.toString()}`);
-      });
-    });
-  };
-  
-  // Call this function, e.g., when the component loads or when events/resources are updated
-  useEffect(() => {
-    checkResourcesWithEvents();
-  }, [config.events, allResources]);
-  
-
-
-
-
-
-
-  
-
-
-
-  useEffect(() => {
-    // Adding the event for RP 1 on November 7, 2024, at 9:00 AM
-    setConfig(prevConfig => ({
-      ...prevConfig,
-      events: [
-        ...prevConfig.events,
-        
-        {
-          id: DayPilot.guid(),
-          text: "RP1 Event",
-          start: new DayPilot.Date("2024-11-07T09:00:00"),
-          end: new DayPilot.Date("2024-11-07T10:00:00"), // Adjust the end time as needed
-          resource: "R1" // RP 1 corresponds to "R1"
-        }
-      ]
-    }));
-  }, []);
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -383,42 +189,81 @@ const Calendar = () => {
 
 
 
-  const handlePurposeChange = (e) => {
-    setSelectedPurpose(e.target.value);
-  };
 
-  const handleLocationChange = (e) => {
-    setSelectedLocation(e.target.value);
-    
-  };
 
-  const resources5 = () => {
-    setConfig(prevConfig => ({
-      ...prevConfig,
-      columnWidthSpec: "Auto",
-      columns: [
-        { name: "Resource 1", id: "R1" },
-        { name: "Resource 2", id: "R2" },
-        { name: "Resource 3", id: "R3" },
-        { name: "Resource 4", id: "R4" },
-        { name: "Resource 5", id: "R5" }
-      ],
-      headerLevels: 1
-    }));
-  };
+  const [startRange, setStartRange] = useState(DayPilot.Date.today());
+  const [endRange, setEndRange] = useState(DayPilot.Date.today().addDays(7));
+
+  const startDateRef = useRef(null); // Reference to the start date picker
+  const endDateRef = useRef(null);   // Reference to the end date picker
+  const calendarRef = useRef(null);  // Reference to the DayPilot calendar
+
+  // Set default values for the date pickers immediately on mount
+  useEffect(() => {
+    if (startDateRef.current && endDateRef.current) {
+      startDateRef.current.value = startRange.toString(); // Initialize start date
+      endDateRef.current.value = endRange.toString();     // Initialize end date
+    }
+  }, [startRange, endRange]);
 
 
 
 
-  
+
+
 
 
 
 
   const daysResources = () => {
-    applyResourceFilter(); // This will set the filtered resources in config.columns based on selectedPurpose and selectedLocation
+    // Convert the date strings into native JavaScript Date objects
+    const startDate = new Date(startRange);
+    const endDate = new Date(endRange);
+  
+    // Calculate the difference in days, including the end date
+    const daysDifference = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+  
+    // Create columns for each day in the selected range
+    const columns = Array.from({ length: daysDifference }, (_, i) => {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(currentDate.getDate() + i); // Add i days to the start date
+  
+      // Add all resources as children for the current day
+      return {
+        id: i,
+        name: currentDate.toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        }),
+        children: allResources.map((resource) => ({
+          id: `${resource.id}-${i}`, // Unique ID for each child
+          name: resource.name,
+          purpose: resource.purpose,
+          location: resource.location,
+        })),
+      };
+    });
+  
+    // Update the calendar configuration
+    setConfig((prevConfig) => ({
+      ...prevConfig,
+      columnWidthSpec: "Fixed",
+      columnWidth: 80,
+      columns,         // Update columns with the computed date range
+      startDate: startDate.toISOString(), // Set the calendar start date
+      days: daysDifference, // Update number of days
+      headerLevels: 2, // Use two header levels for better visualization
+    }));
+  };
+  
+
+
+  
+ const daysResourcess = () => {
+
     
-    const columns = Array.from({ length: 28 }, (_, i) => {
+    const columns = Array.from({ length: 3 }, (_, i) => {
       const start = DayPilot.Date.today().addDays(i);
       return {
         id: i,
@@ -430,44 +275,7 @@ const Calendar = () => {
   
     setConfig(prevConfig => ({
       ...prevConfig,
-      columnWidthSpec: "Fixed",
-      columnWidth: 80,
-      columns,
-      headerLevels: 2
-    }));
-  };
-  
-
-
-
-
-  const resourcesDays = () => {
-    applyResourceFilter();
-  
-    // Create a parent column for each filtered resource
-    const columns = config.columns.map(resource => {
-      // Generate 7 days as sub-columns for each resource
-      const children = Array.from({ length: 7 }, (_, i) => {
-        const date = DayPilot.Date.today().addDays(i);
-        return {
-          id: `${resource.id}_${i}`, // Unique ID for each sub-column
-          start: date,
-          name: date.toString("MMMM d, yyyy") // Display the date as a string
-        };
-      });
-  
-      return {
-        name: resource.name,
-        id: resource.id,
-        children // Attach the children array as sub-columns
-      };
-    });
-  
-    // Update the calendar configuration with new columns
-    setConfig(prevConfig => ({
-      ...prevConfig,
-      columnWidthSpec: "Fixed",
-      columnWidth: 100,
+      columnWidthSpec: "100",
       columns,
       headerLevels: 2
     }));
@@ -475,42 +283,36 @@ const Calendar = () => {
   
   
 
-  useEffect(() => {
-    console.log("Component mounted!");
-    // Other code...
-  }, []);
-  
 
-  const [startRange, setStartRange] = useState(DayPilot.Date.today());
-  const [endRange, setEndRange] = useState(DayPilot.Date.today().addDays(7));
 
   
-  const handleDateChange = () => {
+
+
+
+  const handleDateChange = (args) => {
     if (!startRange || !endRange) {
-      console.error("Invalid date range selected");
+      console.log("Please select both start and end dates.");
       return;
-    }
+    }    
+  
+    const startDate = new Date(startRange);
+    const endDate = new Date(endRange)
 
-    const days = DayPilot.DateUtil.daysDiff(startRange, endRange) + 1;
-    if (days <= 0) {
-      console.error("End date must be later than start date");
-      return;
-    }
+    const daysDifference = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1;
 
     // Update the calendar's date range using the DayPilot API
     const calendar = calendarRef.current.control;
     calendar.update({
       startDate: startRange,
-      days: days,
+      days: daysDifference, // Number of days to display
+     
+      
+
     });
-
-    // Use DayPilot.Scheduler.events.forRange() to filter events based on the date range
-    const filteredEvents = DayPilot.Scheduler.events.forRange([startRange, endRange]);
-
-    // Update the events in the state based on the filtered range
-    setEvents(filteredEvents);
-    console.log(`Date range applied: ${startRange} to ${endRange}`);
+    daysResources()
+   
   };
+
 
 
 
@@ -534,9 +336,9 @@ const Calendar = () => {
     selectMode={"Day"}
     showMonths={3}
     skipMonths={3}
-    selectionDay={startDate}
-    startDate={startDate}
-    onTimeRangeSelected={ args => setStartDate(args.day) }
+    selectionDay={startRange}
+    startDate={startRange}
+    onTimeRangeSelected={ args => setStartRange(args.day) }
   />
 </div>
 <div className={"calendar"}>
@@ -549,50 +351,32 @@ const Calendar = () => {
 
 
     Resources view:
-        <label><input name="view" type="radio" onClick={resources5} defaultChecked={true} /> 5 columns</label>
+      
         <label><input name="view" type="radio" onClick={daysResources} /> Days/resources</label>
-        <label><input name="view" type="radio" onClick={resourcesDays} /> Resources/days</label>
+       
         
-        <label><input name="view" type="radio" onClick={applyResourceFilter} /> All</label>
+     
 
-        <label>
-          Purpose:
-          <select onChange={handlePurposeChange} value={selectedPurpose}>
-            <option value="All">All</option>
-            <option value="Play">Play</option>
-            <option value="Couple">Couple</option>
-            <option value="Individual">Individual</option>
-          </select>
-        </label>
+    
 
-        <label>
-          Location:
-          <select onChange={handleLocationChange} value={selectedLocation}>
-            <option value="All">All</option>
-            <option value="RP">RP</option>
-            <option value="CC">CC</option>
-            <option value="Airmont">Airmont</option>
-          </select>
-        </label>
-
-        
+     
        
   </div>
   <div className="date-picker-container">
         <label>
           Start Date:
           <input
-            type="date"
+            type="date " ref={startDateRef}
             value={startRange.toString("yyyy-MM-dd")}
-            onChange={(e) => setStartRange(new DayPilot.Date(e.target.value))}
+            onChange={(e) => setStartRange(new DayPilot.Date(e.target.value))} // Update start date state
           />
         </label>
         <label>
           End Date:
           <input
-            type="date"
+            type="date" ref={endDateRef}
             value={endRange.toString("yyyy-MM-dd")}
-            onChange={(e) => setEndRange(new DayPilot.Date(e.target.value))}
+            onChange={(e) => setEndRange(new DayPilot.Date(e.target.value))} // Update end date state
           />
         </label>
         <button onClick={handleDateChange}>Apply Date Range</button>
@@ -601,7 +385,7 @@ const Calendar = () => {
 
 
 
-  <button onClick={filterDaysWithEvents}>Filter Days with Events</button>
+  
 
 
 
@@ -614,8 +398,13 @@ const Calendar = () => {
       {...config}
       ref={calendarRef}
       onTimeRangeSelected={onTimeRangeSelected}
-      startDate={startDate}
-  
+      startDate={startRange}
+
+      viewType="Resources" // Ensures support for daysResources
+      showTime={true}
+      durationBarVisible={true}
+    
+   
       />
 
 </div>
