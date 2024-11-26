@@ -51,22 +51,7 @@ const Calendar = () => {
         end: DayPilot.Date.today().addHours(10),
         resource: "R6"
       },
-      {
-        id: 1,
-        text: "Event 7",
-        start: DayPilot.Date.today().addHours(9),
-        end: DayPilot.Date.today().addHours(10),
-        resource: "R7"
-      },
 
-
-      {
-        id: 1,
-        text: "Event 1",
-        start: DayPilot.Date.today().addHours(10),
-        end: DayPilot.Date.today().addHours(11),
-        resource: "P1"
-      },
       {
         id: 2,
         text: "Event 2",
@@ -110,21 +95,7 @@ const Calendar = () => {
   };
 
 
-  const onTimeRangeSelected = async args => {
-    const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
-    calendarRef.current.control.clearSelection();
-    if (modal.canceled) { return; }
-    setEvents([...events, {
-      start: args.start,
-      end: args.end,
-      id: DayPilot.guid(),
-      resource: args.resource,
-      text: modal.result
-    }]);
-  };
-
-
-
+ 
 
 
 
@@ -211,6 +182,38 @@ const Calendar = () => {
 
 
 
+  useEffect(() => {
+    // load resource and event data
+    setConfig(prevConfig => ({
+      ...prevConfig,
+      startDate: DayPilot.Date.today(),
+      events: [
+        {
+          id: 1,
+          text: "Event 11",
+          start: DayPilot.Date.today().addHours(10),
+          end: DayPilot.Date.today().addHours(12),
+          resource: "R1"
+        },
+        {
+          id: 2,
+          text: "Event 2",
+          start: "2024-11-27T10:00:00",
+          end: "2024-11-27T11:00:00",
+          resource: "R2",
+          barColor: "#38761d",
+          barBackColor: "#93c47d"
+        }
+      ]
+    }));
+
+   
+  }, []);
+
+
+
+
+
 
 
 
@@ -236,7 +239,7 @@ const Calendar = () => {
           day: "numeric",
           year: "numeric",
         }),
-        children: allResources.map((resource) => ({
+        children:  allResources.map((resource) => ({
           id: `${resource.id}-${i}`, // Unique ID for each child
           name: resource.name,
           purpose: resource.purpose,
@@ -254,10 +257,14 @@ const Calendar = () => {
       startDate: startDate.toISOString(), // Set the calendar start date
       days: daysDifference, // Update number of days
       headerLevels: 2, // Use two header levels for better visualization
+      events: prevConfig.events 
     }));
+
+    
   };
   
 
+  
 
   
  const daysResourcess = () => {
@@ -277,7 +284,8 @@ const Calendar = () => {
       ...prevConfig,
       columnWidthSpec: "100",
       columns,
-      headerLevels: 2
+      headerLevels: 2,
+       events: prevConfig.events 
     }));
   };
   
@@ -338,7 +346,7 @@ const Calendar = () => {
     skipMonths={3}
     selectionDay={startRange}
     startDate={startRange}
-    onTimeRangeSelected={ args => setStartRange(args.day) }
+
   />
 </div>
 <div className={"calendar"}>
@@ -366,7 +374,7 @@ const Calendar = () => {
         <label>
           Start Date:
           <input
-            type="date " ref={startDateRef}
+            type="date" ref={startDateRef}
             value={startRange.toString("yyyy-MM-dd")}
             onChange={(e) => setStartRange(new DayPilot.Date(e.target.value))} // Update start date state
           />
@@ -397,7 +405,7 @@ const Calendar = () => {
      
       {...config}
       ref={calendarRef}
-      onTimeRangeSelected={onTimeRangeSelected}
+     
       startDate={startRange}
 
       viewType="Resources" // Ensures support for daysResources
